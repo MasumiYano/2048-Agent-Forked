@@ -1,28 +1,31 @@
 // helper functions
+// Just a pivot function 
 function swap(lst, a, b) {
     var temp = lst[a];
     lst[a] = lst[b];
     lst[b] = temp;
 };
 
+// Given an number and create the random number 
 function randomInt(n) {
     return Math.floor(Math.random() * n);
 };
 
+// returns boolean value the the random number is less than the rate.
 function mutationRate(rate) {
     return Math.random() < rate;
 };
 
 // Permutation doubles as a strategy and a node in a trie
-function Permutation(perm) {
+function Permutation(perm) { // perm -> given array. 
     this.children = [null, null, null, null];
 
-    if (perm) {
+    if (perm) { // if the perm isn't null then use the given perm 
         this.perm = perm;
     } else {
-        var lst = [0, 1, 2, 3];
+        var lst = [0, 1, 2, 3]; // 
         this.perm = [];
-        while (lst.length > 0) {
+        while (lst.length > 0) { // add what's in lst into perm. 
             var index = randomInt(lst.length);
             this.perm.push(lst[index]);
             lst.splice(index, 1);
@@ -31,20 +34,24 @@ function Permutation(perm) {
 };
 
 Permutation.prototype.clone = function () {
-    var perm = [];
+    // inherite from permutation function. 
+    // create a new function that has the same code as the original function. 
+    var perm = []; // make perm
     for (var i = 0; i < this.perm.length; i++) {
-        perm.push(this.perm[i]);
+        perm.push(this.perm[i]); // add number that correlates w/ its index. 
     }
-    return new Permutation(perm);
+    return new Permutation(perm); // pass in the perm into new Permutation.
 };
 
+// custom method to permutation. 
 Permutation.prototype.mutate = function () {
+    // pick random two indexes in perm and swap them. 
     var a = randomInt(this.perm.length);
     var b = randomInt(this.perm.length);
     swap(this.perm, a, b);
 };
 
-// Trie stores differnt strategies based on last sequence of moves
+// Trie stores different strategies based on last sequence of moves
 function Trie() {
     this.root = new Permutation();
 };
@@ -541,3 +548,129 @@ AgentManager.prototype.selectMove = function () {
         else if (!this.gameManager.move(agent.selectMove(this.gameManager))) console.log("bad move");
     }
 };
+
+
+/**
+ 
+ class UtilityFunctions {
+  static swap(lst, a, b) {
+    const temp = lst[a];
+    lst[a] = lst[b];
+    lst[b] = temp;
+  }
+
+  static randomInt(n) {
+    return Math.floor(Math.random() * n);
+  }
+
+  static mutationRate(rate) {
+    return Math.random() < rate;
+  }
+}
+
+class Permutation {
+  constructor(perm) {
+    this.children = [null, null, null, null];
+    this.perm = perm || this.generateRandomPermutation();
+  }
+
+  generateRandomPermutation() {
+    const lst = [0, 1, 2, 3];
+    const perm = [];
+    while (lst.length > 0) {
+      const index = UtilityFunctions.randomInt(lst.length);
+      perm.push(lst[index]);
+      lst.splice(index, 1);
+    }
+    return perm;
+  }
+
+  clone() {
+    const perm = this.perm.slice();
+    return new Permutation(perm);
+  }
+
+  mutate() {
+    const a = UtilityFunctions.randomInt(this.perm.length);
+    const b = UtilityFunctions.randomInt(this.perm.length);
+    UtilityFunctions.swap(this.perm, a, b);
+  }
+}
+
+class Trie {
+  constructor() {
+    this.root = new Permutation();
+  }
+
+  evalRecurse(prefix, per`````m) {
+    if (prefix.length > 0 && perm.children[prefix[0]] !== null) {
+      const index = prefix[0];
+      return this.evalRecurse(prefix.slice(1), perm.children[index]);
+    } else {
+      return perm;
+    }
+  }
+
+  evaluate(prefix) {
+    return this.evalRecurse(prefix, this.root);
+  }
+
+  mutateRecurse(rate, perm, grow) {
+    if (UtilityFunctions.mutationRate(rate)) perm.mutate();
+    const growChild = UtilityFunctions.randomInt(perm.children.length);
+    for (let i = 0; i < perm.children.length; i++) {
+      if (perm.children[i] !== null) {
+        const g = i === growChild && grow;
+        this.mutateRecurse(rate, perm.children[i], g);
+      } else if (i === growChild) {
+        perm.children[i] = new Permutation();
+      }
+    }
+  }
+
+  mutate(rate) {
+    const growTrie = UtilityFunctions.mutationRate(rate);
+    this.mutateRecurse(rate, this.root, growTrie);
+  }
+
+  cloneRecurse(perm) {
+    const newPerm = perm.clone();
+    for (let i = 0; i < perm.children.length; i++) {
+      if (perm.children[i] !== null) {
+        newPerm.children[i] = this.cloneRecurse(perm.children[i]);
+      } else {
+        newPerm.children[i] = null;
+      }
+    }
+    return newPerm;
+  }
+
+  clone() {
+    return new Trie(this.cloneRecurse(this.root));
+  }
+}
+
+class BlindAgent {
+  constructor(trie) {
+    this.actions = [];
+    this.mutationRate = 0.10;
+    this.score = 0;
+    this.trie = trie || new Trie();
+  }
+
+  selectMove() {
+    if (this.actions.length > 200) this.actions.splice(100, 100);
+    const action = this.trie.evaluate(this.actions);
+    return action;
+  }
+
+  cloneAndMutate() {
+    const newTrie = this.trie.clone();
+    newTrie.mutate(this.mutationRate);
+    return new BlindAgent(newTrie);
+  }
+}
+
+// Define other classes like AgentBrain, LookAheadAgent, and AgentManager similarly.
+
+ */
